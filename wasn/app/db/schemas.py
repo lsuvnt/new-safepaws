@@ -130,6 +130,13 @@ class ActivityLogOut(BaseModel):
     activity_description: str
     cat_id: int | None
     user_id: int | None
+    username: str | None = None  # Username of the user who contributed
+    activity_type: str | None = None  # 'contribution' or 'condition_change'
 
     class Config:
         from_attributes = True
+
+
+class ActivityLogCreate(BaseModel):
+    cat_id: int
+    activity_description: str

@@ -206,3 +206,165 @@ export async function fetchAdoptionListings() {
   }
 }
 
+/**
+ * Fetch activity logs for a cat (public endpoint for map pins)
+ * @param {number} catId - Cat ID
+ * @returns {Promise<Array>} Array of activity log objects
+ */
+export async function fetchCatActivityLogs(catId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/activity/cat/${catId}/public`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch activity logs: ${response.status} ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching activity logs:', error);
+    throw error;
+  }
+}
+
+/**
+ * Create an activity log entry
+ * @param {Object} activityData - Activity data { cat_id, activity_description }
+ * @returns {Promise<Object>} Created activity log object
+ */
+export async function createActivityLog(activityData) {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/activity/`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(activityData),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Failed to create activity log: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating activity log:', error);
+    throw error;
+  }
+}
+
+/**
+ * Update pin condition flag
+ * @param {number} locationId - Location ID
+ * @param {Object} conditionData - Condition data { condition, description }
+ * @returns {Promise<Object>} Updated pin object
+ */
+export async function updatePinCondition(locationId, conditionData) {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/pins/${locationId}/condition`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(conditionData),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Failed to update condition: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating pin condition:', error);
+    throw error;
+  }
+}
+
+/**
+ * Create a new cat
+ * @param {Object} catData - Cat data { name, gender, age, notes, image_url }
+ * @returns {Promise<Object>} Created cat object
+ */
+export async function createCat(catData) {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/cats/`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(catData),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Failed to create cat: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating cat:', error);
+    throw error;
+  }
+}
+
+/**
+ * Create a cat and pin together (cat with location)
+ * @param {Object} data - { cat: { name, gender, age, notes, image_url }, location: { latitude, longitude }, condition }
+ * @returns {Promise<Object>} Created pin with cat data
+ */
+export async function createCatWithPin(data) {
+  try {
+    // First create the cat
+    const cat = await createCat(data.cat);
+    
+    // Then create the pin with the cat_id
+    const pinData = {
+      cat_id: cat.cat_id,
+      latitude: data.location.latitude,
+      longitude: data.location.longitude,
+    };
+    
+    const pin = await createPin(pinData);
+    
+    // If condition is provided, update it (default is UNKNOWN, so update if user selected something else)
+    if (data.condition) {
+      try {
+        await updatePinCondition(pin.location_id, {
+          condition: data.condition,
+          description: data.conditionDescription || null,
+        });
+        // Refetch pin to get updated condition
+        const pins = await fetchPins();
+        return pins.find(p => p.location_id === pin.location_id);
+      } catch (conditionError) {
+        console.error('Error setting initial condition:', conditionError);
+        // Continue anyway, the pin was created successfully
+      }
+    }
+    
+    // Refetch to get full pin with cat data
+    const pins = await fetchPins();
+    return pins.find(p => p.location_id === pin.location_id) || pin;
+  } catch (error) {
+    console.error('Error creating cat with pin:', error);
+    throw error;
+  }
+}
+
