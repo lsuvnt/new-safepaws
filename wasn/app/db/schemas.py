@@ -123,3 +123,13 @@ class NotificationOut(BaseModel):
     class Config:
         from_attributes = True
 
+
+class ActivityLogOut(BaseModel):
+    log_id: int
+    activity_time: str
+    activity_description: str
+    cat_id: int | None
+    user_id: int | None
+
+    class Config:
+        from_attributes = True

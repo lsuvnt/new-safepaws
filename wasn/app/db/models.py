@@ -87,3 +87,13 @@ class Notification(Base):
     is_read = Column(Boolean, default=False)
     created_at = Column(TIMESTAMP, server_default=sql_func.now(), nullable=False)
     user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE", onupdate="CASCADE"), nullable=False)
+
+
+class ActivityLog(Base):
+    __tablename__ = "activity_log"
+
+    log_id = Column(Integer, primary_key=True, index=True)
+    activity_time = Column(TIMESTAMP, server_default=sql_func.now())
+    activity_description = Column(Text, nullable=False)
+    cat_id = Column(Integer, ForeignKey("cats.cat_id"))
+    user_id = Column(Integer, ForeignKey("users.user_id", ondelete="SET NULL"))

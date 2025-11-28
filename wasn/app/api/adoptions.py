@@ -37,6 +37,25 @@ class AdoptionListingOut(BaseModel):
     class Config:
         from_attributes = True
 
+class AdoptionListingWithCatOut(BaseModel):
+    listing_id: int
+    cat_id: int
+    vaccinated: bool
+    sterilized: bool
+    is_active: bool
+    notes: str | None = None  # Notes from adoption_listings table
+    created_at: datetime | None = None
+    uploader_id: int
+    # Cat fields
+    name: str | None = None
+    gender: str | None = None
+    age: int | None = None
+    image_url: str | None = None
+    cat_notes: str | None = None  # Notes from cats table
+
+    class Config:
+        from_attributes = True
+
 
 # ===================== CREATE =====================
 @router.post("/", response_model=AdoptionListingOut, status_code=status.HTTP_201_CREATED)
@@ -90,10 +109,39 @@ def create_adoption_listing(
     return listing
 # ===================== LIST ALL =====================
 
-@router.get("/", response_model=list[AdoptionListingOut])
+@router.get("/", response_model=list[AdoptionListingWithCatOut])
 def list_adoptions(db: Session = Depends(get_db)):
-    listings = db.query(AdoptionListing).order_by(AdoptionListing.listing_id.desc()).all()
-    return listings
+    # Query adoption listings with cat data using join
+    results = db.query(
+        AdoptionListing,
+        Cat
+    ).join(
+        Cat, AdoptionListing.cat_id == Cat.cat_id
+    ).order_by(
+        AdoptionListing.listing_id.desc()
+    ).all()
+    
+    # Build response with cat data
+    result = []
+    for listing, cat in results:
+        listing_dict = {
+            "listing_id": listing.listing_id,
+            "cat_id": listing.cat_id,
+            "vaccinated": listing.vaccinated,
+            "sterilized": listing.sterilized,
+            "is_active": listing.is_active,
+            "notes": listing.notes,  # Notes from adoption_listings table
+            "created_at": listing.created_at,
+            "uploader_id": listing.uploader_id,
+            "name": cat.name if cat else None,
+            "gender": cat.gender if cat else None,
+            "age": cat.age if cat else None,
+            "image_url": cat.image_url if cat else None,
+            "cat_notes": cat.notes if cat else None,  # Notes from cats table
+        }
+        result.append(listing_dict)
+    
+    return result
 
 
 # ===================== UPDATE =====================

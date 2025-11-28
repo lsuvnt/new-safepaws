@@ -12,6 +12,7 @@ from app.api.cat import router as cat_router
 from app.api.adoptions import router as adoptions_router
 from app.api.adoptionsRequest import router as adoptionsRequest_router
 from app.api.notifications import router as notifications_router
+from app.api.activity import router as activity_router
 from dotenv import load_dotenv
 
 # Load .env from the app folder
@@ -73,3 +74,4 @@ app.include_router(cat_router)
 app.include_router(adoptions_router)
 app.include_router(adoptionsRequest_router)
 app.include_router(notifications_router)
+app.include_router(activity_router)
