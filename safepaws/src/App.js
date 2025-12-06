@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage';
 import AdoptionPage from './pages/AdoptionPage';
 import MapPage from './pages/MapPage';
 import SettingsPage from './pages/SettingsPage';
+import NotificationsPage from './pages/NotificationsPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 
@@ -24,6 +25,7 @@ function App() {
             <Route path="/" element={<Layout><HomePage /></Layout>} />
             <Route path="/adoption" element={<Layout><AdoptionPage /></Layout>} />
             <Route path="/map" element={<Layout><MapPage /></Layout>} />
+            <Route path="/notifications" element={<Layout><NotificationsPage /></Layout>} />
             <Route path="/settings" element={<Layout><SettingsPage /></Layout>} />
             
             {/* Redirect unknown routes to home */}

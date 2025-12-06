@@ -4,11 +4,14 @@ import { useAdoption } from '../contexts/AdoptionContext';
 import { useMap } from '../contexts/MapContext';
 import { fetchCatActivityLogs, createActivityLog, updatePinCondition, getUserProfile, createCatWithPin } from '../services/api';
 import Sidebar from './Sidebar';
+import AdoptionForm from './AdoptionForm';
+import AdoptionRequestReview from './AdoptionRequestReview';
+import AdoptionListingForm from './AdoptionListingForm';
 
 function Layout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const location = useLocation();
-  const { selectedListing } = useAdoption();
+  const { selectedListing, setSelectedListing, reviewRequestId, setReviewRequestId, showAdoptionListingForm, setShowAdoptionListingForm } = useAdoption();
   const { selectedPin, setSelectedPin, triggerRefresh, newCatLocation, setNewCatLocation } = useMap();
   const [activityLogs, setActivityLogs] = useState([]);
   const [loadingActivity, setLoadingActivity] = useState(false);
@@ -29,16 +32,40 @@ function Layout({ children }) {
   const [newCatCondition, setNewCatCondition] = useState('NORMAL');
   const [newCatConditionDesc, setNewCatConditionDesc] = useState('');
   const [submittingNewCat, setSubmittingNewCat] = useState(false);
+  
+  // Adoption form state
+  const [showAdoptionForm, setShowAdoptionForm] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // Hide right section on homepage and settings
-  const hideRightSection = location.pathname === '/' || location.pathname === '/settings';
   const isAdoptionPage = location.pathname === '/adoption';
   const isMapPage = location.pathname === '/map';
-
+  const isNotificationsPage = location.pathname === '/notifications';
+  
+  // Determine if right section should be shown
+  // Show on: adoption page (only if not showing adoption listing form), map page, or on notifications page when reviewing an adoption request
+  const shouldShowRightSection = (isAdoptionPage && !showAdoptionListingForm) || isMapPage || (isNotificationsPage && reviewRequestId !== null);
+  
+  // Clear reviewRequestId when navigating away from notifications page
+  useEffect(() => {
+    if (reviewRequestId && !isNotificationsPage) {
+      setReviewRequestId(null);
+    }
+  }, [location.pathname, reviewRequestId, isNotificationsPage, setReviewRequestId]);
+  
+  // Also clear selectedListing when navigating away from adoption page
+  useEffect(() => {
+    if (!isAdoptionPage && selectedListing) {
+      setSelectedListing(null);
+      setShowAdoptionForm(false);
+    }
+    if (!isAdoptionPage && showAdoptionListingForm) {
+      setShowAdoptionListingForm(false);
+    }
+  }, [location.pathname, isAdoptionPage, selectedListing, setSelectedListing, showAdoptionListingForm, setShowAdoptionListingForm]);
+  
   // Get current user ID
   useEffect(() => {
     const loadUserProfile = async () => {
@@ -81,6 +108,13 @@ function Layout({ children }) {
       setConditionDescription('');
     }
   }, [selectedPin]);
+
+  // Reset adoption form when listing changes
+  useEffect(() => {
+    if (selectedListing) {
+      setShowAdoptionForm(false);
+    }
+  }, [selectedListing]);
 
   // Helper function to get condition color and description
   const getConditionInfo = (condition) => {
@@ -254,12 +288,30 @@ function Layout({ children }) {
     <div className="h-screen w-screen">
       <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
       
-      {/* Right side container - hidden on homepage and settings */}
-      {!hideRightSection && (
+      {/* Right side container - shown on adoption/map pages, or when reviewing adoption request */}
+      {shouldShowRightSection && (
         <div className="fixed right-0 top-0 h-screen w-1/4 bg-gray-200 border-l border-gray-300 overflow-y-auto">
-          {isAdoptionPage ? (
+          {reviewRequestId && isNotificationsPage ? (
+            <AdoptionRequestReview
+              requestId={reviewRequestId}
+              onBack={() => setReviewRequestId(null)}
+              onSuccess={() => {
+                setReviewRequestId(null);
+              }}
+            />
+          ) : isAdoptionPage ? (
             <div className="p-6 h-full">
-              {!selectedListing ? (
+              {showAdoptionForm ? (
+                <AdoptionForm
+                  listing={selectedListing}
+                  currentUserId={currentUserId}
+                  onBack={() => setShowAdoptionForm(false)}
+                  onSuccess={(catName) => {
+                    setShowAdoptionForm(false);
+                    // Notification will be created by backend
+                  }}
+                />
+              ) : !selectedListing ? (
                 <div className="flex items-center justify-center h-full">
                   <p className="text-gray-500 text-center">(Select 'View Details' on a listing)</p>
                 </div>
@@ -335,6 +387,25 @@ function Layout({ children }) {
                         </div>
                       )}
                     </div>
+
+                    {/* Apply for Adoption Button - only show if listing doesn't belong to current user */}
+                    {currentUserId && selectedListing.uploader_id !== currentUserId && (
+                      <div className="mt-6">
+                        <button
+                          onClick={() => setShowAdoptionForm(true)}
+                          className="w-full px-4 py-2 text-white rounded-lg transition-colors"
+                          style={{ backgroundColor: '#D05A57' }}
+                          onMouseEnter={(e) => {
+                            e.target.style.backgroundColor = '#b94643';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.backgroundColor = '#D05A57';
+                          }}
+                        >
+                          Apply for Adoption
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -807,21 +878,31 @@ function Layout({ children }) {
                 </div>
               )}
             </div>
-          ) : (
-          <div className="h-full flex items-center justify-center">
-            <p className="text-gray-500 text-center px-4">
-              Placeholder Text
-            </p>
-          </div>
-          )}
+          ) : null}
         </div>
       )}
 
       <main className={`h-screen bg-gray-50 overflow-y-auto transition-all duration-300 ${
-        hideRightSection ? 'mr-0' : 'mr-[25%]'
+        shouldShowRightSection ? 'mr-[25%]' : 'mr-0'
       } ${isSidebarOpen ? 'ml-[20%]' : 'ml-16'}`}>
         {children}
       </main>
+
+      {/* Adoption Listing Form Modal */}
+      {showAdoptionListingForm && isAdoptionPage && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowAdoptionListingForm(false)}>
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <AdoptionListingForm
+              onBack={() => setShowAdoptionListingForm(false)}
+              onSuccess={() => {
+                setShowAdoptionListingForm(false);
+                // Refresh the page to show the new listing
+                window.location.reload();
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

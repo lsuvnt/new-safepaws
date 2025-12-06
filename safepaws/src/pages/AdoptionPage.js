@@ -9,7 +9,7 @@ function AdoptionPage() {
   const [filterVaccinated, setFilterVaccinated] = useState(false);
   const [adoptionListings, setAdoptionListings] = useState([]);
   const [currentUserId, setCurrentUserId] = useState(null);
-  const { setSelectedListing } = useAdoption();
+  const { setSelectedListing, setShowAdoptionListingForm } = useAdoption();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -75,8 +75,25 @@ function AdoptionPage() {
     <div className="min-h-full">
         {/* Header */}
         <header className="bg-white border-b border-gray-200 px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">Adoption</h1>
-          <p className="text-gray-600 mt-2">Find your perfect companion</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Adoption</h1>
+              <p className="text-gray-600 mt-2">Find your perfect companion</p>
+            </div>
+            <button
+              onClick={() => setShowAdoptionListingForm(true)}
+              className="px-6 py-2 text-white rounded-lg transition-colors"
+              style={{ backgroundColor: '#D05A57' }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = '#b94643';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = '#D05A57';
+              }}
+            >
+              Add Adoption Listing
+            </button>
+          </div>
         </header>
 
       {/* Search and Filter Section */}

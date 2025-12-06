@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { getUserProfile } from '../services/api';
+import { getUserProfile, getUnreadNotificationCount, getAllIncomingAdoptionRequests } from '../services/api';
 
 function Sidebar({ isOpen, onToggle }) {
   const location = useLocation();
@@ -10,12 +10,16 @@ function Sidebar({ isOpen, onToggle }) {
     profile_picture_url: null,
   });
   const [loading, setLoading] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
 
   const isActive = (path) => location.pathname === path;
 
-  // Clear hover states when route changes
+  // Clear hover states when route changes and refresh unread count
   useEffect(() => {
-    // This effect will run when location changes, ensuring hover states are cleared
+    // Refresh unread count and pending requests when navigating
+    loadUnreadCount();
+    loadPendingRequestsCount();
   }, [location.pathname]);
 
   useEffect(() => {
@@ -39,7 +43,39 @@ function Sidebar({ isOpen, onToggle }) {
     };
 
     fetchUserProfile();
+    loadUnreadCount();
+    loadPendingRequestsCount();
+    
+    // Refresh unread count and pending requests periodically
+    const interval = setInterval(() => {
+      loadUnreadCount();
+      loadPendingRequestsCount();
+    }, 30000); // Check every 30 seconds
+    
+    return () => clearInterval(interval);
   }, []);
+
+  const loadUnreadCount = async () => {
+    try {
+      const count = await getUnreadNotificationCount();
+      setUnreadCount(count);
+    } catch (error) {
+      console.error('Error loading unread count:', error);
+    }
+  };
+
+  const loadPendingRequestsCount = async () => {
+    try {
+      const requests = await getAllIncomingAdoptionRequests();
+      const pendingCount = requests.filter(req => req.status === 'Pending').length;
+      setPendingRequestsCount(pendingCount);
+    } catch (error) {
+      console.error('Error loading pending requests count:', error);
+    }
+  };
+
+  // Total count includes unread notifications + pending adoption requests
+  const totalNotificationCount = unreadCount + pendingRequestsCount;
 
   const handleLogout = () => {
     // Clear the access token from localStorage
@@ -143,6 +179,42 @@ function Sidebar({ isOpen, onToggle }) {
                     }}
                   >
                     Map
+                  </Link>
+                  <Link 
+                    to="/notifications" 
+                    className={`block px-4 py-2 rounded transition-colors relative ${
+                      isActive('/notifications') ? '' : ''
+                    }`}
+                    style={isActive('/notifications') ? {
+                      background: 'linear-gradient(90deg, rgba(199, 54, 97, 1) 30%, rgba(224, 159, 67, 1) 100%)',
+                      backgroundColor: '#c73661'
+                    } : {}}
+                    onMouseEnter={(e) => {
+                      if (!isActive('/notifications')) {
+                        e.currentTarget.style.backgroundColor = '#D05A57';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive('/notifications')) {
+                        e.currentTarget.style.backgroundColor = '';
+                      }
+                    }}
+                    onClick={(e) => {
+                      if (!isActive('/notifications')) {
+                        e.currentTarget.style.backgroundColor = '';
+                      }
+                      loadUnreadCount();
+                      loadPendingRequestsCount();
+                    }}
+                  >
+                    <span className="flex items-center justify-between">
+                      <span>Notifications</span>
+                      {totalNotificationCount > 0 && (
+                        <span className="ml-2 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 min-w-[20px] text-center">
+                          {totalNotificationCount > 99 ? '99+' : totalNotificationCount}
+                        </span>
+                      )}
+                    </span>
                   </Link>
                   <Link 
                     to="/settings" 
@@ -264,6 +336,43 @@ function Sidebar({ isOpen, onToggle }) {
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                   </svg>
+                </Link>
+                <Link 
+                  to="/notifications" 
+                  className={`block p-3 rounded transition-colors relative ${
+                    isActive('/notifications') ? '' : ''
+                  }`}
+                  title="Notifications"
+                  style={isActive('/notifications') ? {
+                    background: 'linear-gradient(90deg, rgba(199, 54, 97, 1) 30%, rgba(224, 159, 67, 1) 100%)',
+                    backgroundColor: '#c73661'
+                  } : {}}
+                  onMouseEnter={(e) => {
+                    if (!isActive('/notifications')) {
+                      e.currentTarget.style.backgroundColor = '#D05A57';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive('/notifications')) {
+                      e.currentTarget.style.backgroundColor = '';
+                    }
+                  }}
+                  onClick={(e) => {
+                    if (!isActive('/notifications')) {
+                      e.currentTarget.style.backgroundColor = '';
+                    }
+                    loadUnreadCount();
+                    loadPendingRequestsCount();
+                  }}
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                  {totalNotificationCount > 0 && (
+                    <span className="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center" style={{ fontSize: '10px' }}>
+                      {totalNotificationCount > 99 ? '99+' : totalNotificationCount}
+                    </span>
+                  )}
                 </Link>
                 <Link 
                   to="/settings" 

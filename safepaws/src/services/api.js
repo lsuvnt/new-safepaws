@@ -207,6 +207,39 @@ export async function fetchAdoptionListings() {
 }
 
 /**
+ * Create an adoption listing
+ * @param {Object} listingData - Adoption listing data { cat_id, vaccinated, sterilized, notes }
+ * @returns {Promise<Object>} Created adoption listing object
+ */
+export async function createAdoptionListing(listingData) {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/adoptions/`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(listingData),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Failed to create adoption listing: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating adoption listing:', error);
+    throw error;
+  }
+}
+
+/**
  * Fetch activity logs for a cat (public endpoint for map pins)
  * @param {number} catId - Cat ID
  * @returns {Promise<Array>} Array of activity log objects
@@ -364,6 +397,288 @@ export async function createCatWithPin(data) {
     return pins.find(p => p.location_id === pin.location_id) || pin;
   } catch (error) {
     console.error('Error creating cat with pin:', error);
+    throw error;
+  }
+}
+
+/**
+ * Create an adoption request
+ * @param {Object} requestData - Adoption request data
+ * @returns {Promise<Object>} Created adoption request object
+ */
+export async function createAdoptionRequest(requestData) {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/adoption-requests/`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Failed to create adoption request: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating adoption request:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get a specific adoption request by ID
+ * @param {number} requestId - Request ID
+ * @returns {Promise<Object>} Adoption request object
+ */
+export async function getAdoptionRequest(requestId) {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/adoption-requests/${requestId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Failed to fetch adoption request: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching adoption request:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get incoming adoption requests (for the receiver) - only pending
+ * @returns {Promise<Array>} Array of adoption request objects
+ */
+export async function getIncomingAdoptionRequests() {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/adoption-requests/incoming`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Failed to fetch incoming requests: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching incoming requests:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get all incoming adoption requests (including accepted/rejected)
+ * @returns {Promise<Array>} Array of adoption request objects
+ */
+export async function getAllIncomingAdoptionRequests() {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/adoption-requests/incoming/all`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Failed to fetch all incoming requests: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching all incoming requests:', error);
+    throw error;
+  }
+}
+
+/**
+ * Accept or reject an adoption request
+ * @param {number} requestId - Request ID
+ * @param {string} action - 'Accepted' or 'Rejected'
+ * @returns {Promise<Object>} Response object
+ */
+export async function handleAdoptionRequest(requestId, action) {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/adoption-requests/action?request_id=${requestId}&action=${action}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Failed to handle adoption request: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error handling adoption request:', error);
+    throw error;
+  }
+}
+
+/**
+ * Fetch all accepted outgoing adoption requests with receiver contact information
+ * @returns {Promise<Array>} Array of accepted requests with contact info
+ */
+export async function getAcceptedOutgoingRequests() {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/adoption-requests/sent/accepted`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Failed to fetch accepted requests: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching accepted outgoing requests:', error);
+    throw error;
+  }
+}
+
+/**
+ * Fetch all notifications for the current user
+ * @returns {Promise<Array>} Array of notification objects
+ */
+export async function fetchNotifications() {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/notifications/`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Failed to fetch notifications: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get unread notification count
+ * @returns {Promise<number>} Number of unread notifications
+ */
+export async function getUnreadNotificationCount() {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      return 0;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/notifications/unread-count`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      return 0;
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching unread count:', error);
+    return 0;
+  }
+}
+
+/**
+ * Mark a notification as read
+ * @param {number} notificationId - Notification ID
+ * @returns {Promise<void>}
+ */
+export async function markNotificationAsRead(notificationId) {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/notifications/${notificationId}/read`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Failed to mark notification as read: ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error('Error marking notification as read:', error);
     throw error;
   }
 }

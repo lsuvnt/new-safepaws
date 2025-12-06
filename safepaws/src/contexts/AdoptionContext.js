@@ -4,9 +4,18 @@ const AdoptionContext = createContext();
 
 export function AdoptionProvider({ children }) {
   const [selectedListing, setSelectedListing] = useState(null);
+  const [reviewRequestId, setReviewRequestId] = useState(null);
+  const [showAdoptionListingForm, setShowAdoptionListingForm] = useState(false);
 
   return (
-    <AdoptionContext.Provider value={{ selectedListing, setSelectedListing }}>
+    <AdoptionContext.Provider value={{ 
+      selectedListing, 
+      setSelectedListing,
+      reviewRequestId,
+      setReviewRequestId,
+      showAdoptionListingForm,
+      setShowAdoptionListingForm
+    }}>
       {children}
     </AdoptionContext.Provider>
   );

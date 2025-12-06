@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field, EmailStr, field_validator
+from datetime import datetime
 import re
 
 class UserCreate(BaseModel):
@@ -105,12 +106,25 @@ class AdoptionRequestOut(BaseModel):
     experience_level: str
     has_other_pets: bool
     status: StatusEnum
+    sender_name: str | None = None  # User's full_name or username from User model
+    submitted_at: datetime | None = None
 
     class Config:
         from_attributes = True
 
 
-from datetime import datetime
+class AcceptedRequestWithContact(BaseModel):
+    request_id: int
+    listing_id: int
+    cat_name: str | None
+    receiver_id: int
+    receiver_name: str | None
+    receiver_email: str | None
+    receiver_phone: str | None
+    submitted_at: datetime | None = None
+
+    class Config:
+        from_attributes = True
 
 
 class NotificationOut(BaseModel):

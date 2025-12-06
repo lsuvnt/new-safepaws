@@ -12,9 +12,27 @@ function MapPage() {
   const tempMarkerRef = useRef(null);
   const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
   const [pins, setPins] = useState([]);
+  const [allPins, setAllPins] = useState([]); // Store all pins before filtering
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const { selectedPin, setSelectedPin, refreshTrigger, newCatLocation, setNewCatLocation } = useMap();
+
+  // Filter pins based on search query
+  useEffect(() => {
+    let filtered = [...allPins];
+
+    // Filter by search query (cat name)
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(pin => {
+        const catName = pin.name ? pin.name.toLowerCase() : '';
+        return catName.includes(query);
+      });
+    }
+
+    setPins(filtered);
+  }, [allPins, searchQuery]);
 
   // Fetch pins from backend
   useEffect(() => {
@@ -23,7 +41,9 @@ function MapPage() {
         setLoading(true);
         setError(null);
         const pinsData = await fetchPins();
-        setPins(pinsData || []); // Ensure it's always an array
+        const pinsArray = pinsData || [];
+        setAllPins(pinsArray); // Store all pins
+        // Filtering will be handled by the useEffect above
       } catch (err) {
         console.error('Failed to load pins:', err);
         // Show more specific error message
@@ -34,7 +54,8 @@ function MapPage() {
         } else {
           setError(`Failed to load pins: ${err.message}`);
         }
-        setPins([]); // Clear pins on error
+        setAllPins([]); // Clear pins on error
+        setPins([]);
       } finally {
         setLoading(false);
       }
@@ -46,12 +67,15 @@ function MapPage() {
     return () => clearInterval(interval);
   }, [refreshTrigger]); // Also refresh when refreshTrigger changes
 
-  // Sync selectedPin with updated pins data
+  // Sync selectedPin with updated pins data and clear if filtered out
   useEffect(() => {
-    if (selectedPin && pins.length > 0) {
+    if (selectedPin) {
       const updatedPin = pins.find(p => p.location_id === selectedPin.location_id);
       if (updatedPin) {
         setSelectedPin(updatedPin);
+      } else if (pins.length > 0) {
+        // Pin was filtered out, clear selection
+        setSelectedPin(null);
       }
     }
   }, [pins, selectedPin, setSelectedPin]);
@@ -241,19 +265,33 @@ function MapPage() {
 
   return (
     <div className="p-8 h-full flex flex-col">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <h1 className="text-3xl font-bold">Map View</h1>
         {loading && <span className="text-sm text-gray-500">Loading pins...</span>}
         {error && <span className="text-sm text-red-500">{error}</span>}
-        {!loading && !error && pins.length === 0 && (
+        {!loading && !error && pins.length === 0 && allPins.length === 0 && (
           <span className="text-sm text-gray-500">No pins found. Backend is connected.</span>
+        )}
+        {!loading && !error && pins.length === 0 && allPins.length > 0 && (
+          <span className="text-sm text-gray-500">No pins match your search/filter</span>
         )}
         {!loading && !error && pins.length > 0 && (
           <span className="text-sm text-gray-500">{pins.length} pin{pins.length !== 1 ? 's' : ''} on map</span>
         )}
       </div>
 
-      <div className="mt-6 flex-1">
+      {/* Search Bar */}
+      <div className="mb-2">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search by cat name..."
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        />
+      </div>
+
+      <div className="mt-3 flex-1">
         <div className="bg-white rounded-lg shadow-md p-4 h-full flex">
           {mapboxToken ? (
             <div
