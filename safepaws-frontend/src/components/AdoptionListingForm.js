@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { createCat, createAdoptionListing } from '../services/api';
+import React, { useState, useEffect } from 'react';
+import { createCat, createAdoptionListing, updateCat, updateAdoptionListing } from '../services/api';
 
-function AdoptionListingForm({ onBack, onSuccess }) {
+function AdoptionListingForm({ listing, onBack, onSuccess }) {
+  const isEditMode = !!listing;
+  
   const [formData, setFormData] = useState({
     // Cat fields
     name: '',
@@ -17,6 +19,22 @@ function AdoptionListingForm({ onBack, onSuccess }) {
 
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+
+  // Pre-populate form when in edit mode
+  useEffect(() => {
+    if (isEditMode && listing) {
+      setFormData({
+        name: listing.name || '',
+        gender: listing.gender || 'UNKNOWN',
+        age: listing.age ? String(listing.age) : '',
+        cat_notes: listing.cat_notes || '',
+        image_url: listing.image_url || '',
+        vaccinated: listing.vaccinated || false,
+        sterilized: listing.sterilized || false,
+        listing_notes: listing.notes || '',
+      });
+    }
+  }, [isEditMode, listing]);
 
   const validateField = (name, value) => {
     const newErrors = { ...errors };
@@ -65,32 +83,54 @@ function AdoptionListingForm({ onBack, onSuccess }) {
     try {
       setSubmitting(true);
       
-      // Step 1: Create the cat
-      const catData = {
-        name: formData.name.trim(),
-        gender: formData.gender,
-        age: formData.age ? parseInt(formData.age) : null,
-        notes: formData.cat_notes.trim() || null,
-        image_url: formData.image_url.trim() || null,
-      };
-      
-      const createdCat = await createCat(catData);
-      
-      // Step 2: Create the adoption listing
-      const listingData = {
-        cat_id: createdCat.cat_id,
-        vaccinated: formData.vaccinated,
-        sterilized: formData.sterilized,
-        notes: formData.listing_notes.trim() || null,
-      };
-      
-      await createAdoptionListing(listingData);
+      if (isEditMode) {
+        // Edit mode: Update existing cat and listing
+        const catData = {
+          name: formData.name.trim(),
+          gender: formData.gender,
+          age: formData.age ? parseInt(formData.age) : null,
+          notes: formData.cat_notes.trim() || null,
+          image_url: formData.image_url.trim() || null,
+        };
+        
+        await updateCat(listing.cat_id, catData);
+        
+        // Update the adoption listing
+        const listingData = {
+          vaccinated: formData.vaccinated,
+          sterilized: formData.sterilized,
+          notes: formData.listing_notes.trim() || null,
+        };
+        
+        await updateAdoptionListing(listing.listing_id, listingData);
+      } else {
+        // Create mode: Create new cat and listing
+        const catData = {
+          name: formData.name.trim(),
+          gender: formData.gender,
+          age: formData.age ? parseInt(formData.age) : null,
+          notes: formData.cat_notes.trim() || null,
+          image_url: formData.image_url.trim() || null,
+        };
+        
+        const createdCat = await createCat(catData);
+        
+        // Create the adoption listing
+        const listingData = {
+          cat_id: createdCat.cat_id,
+          vaccinated: formData.vaccinated,
+          sterilized: formData.sterilized,
+          notes: formData.listing_notes.trim() || null,
+        };
+        
+        await createAdoptionListing(listingData);
+      }
       
       if (onSuccess) {
         onSuccess();
       }
     } catch (error) {
-      alert(error.message || 'Failed to create adoption listing. Please try again.');
+      alert(error.message || `Failed to ${isEditMode ? 'update' : 'create'} adoption listing. Please try again.`);
     } finally {
       setSubmitting(false);
     }
@@ -99,7 +139,7 @@ function AdoptionListingForm({ onBack, onSuccess }) {
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Create Adoption Listing</h2>
+        <h2 className="text-2xl font-bold text-gray-900">{isEditMode ? 'Edit Adoption Listing' : 'Create Adoption Listing'}</h2>
         <button
           onClick={onBack}
           className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -111,7 +151,7 @@ function AdoptionListingForm({ onBack, onSuccess }) {
         </button>
       </div>
       
-      <p className="text-gray-600 mb-6">Fill out all the information about the cat and adoption listing below</p>
+      <p className="text-gray-600 mb-6">{isEditMode ? 'Update the information about the cat and adoption listing below' : 'Fill out all the information about the cat and adoption listing below'}</p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
             {/* Cat Name */}
@@ -292,7 +332,9 @@ function AdoptionListingForm({ onBack, onSuccess }) {
                   }
                 }}
               >
-                {submitting ? 'Creating Listing...' : 'Create Adoption Listing'}
+                {submitting 
+                  ? (isEditMode ? 'Updating Listing...' : 'Creating Listing...') 
+                  : (isEditMode ? 'Update Adoption Listing' : 'Create Adoption Listing')}
               </button>
             </div>
           </form>

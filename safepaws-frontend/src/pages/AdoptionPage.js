@@ -51,10 +51,7 @@ function AdoptionPage() {
   // Filter and sort pets
   const filteredPets = adoptionListings
     .filter(pet => {
-      // Don't show listings where the uploader is the current user
-      if (currentUserId && pet.uploader_id === currentUserId) {
-        return false;
-      }
+      // Show all listings regardless of who posted them
       const matchesSearch = pet.name?.toLowerCase().includes(searchQuery.toLowerCase()) || false;
       const matchesSterilized = !filterSterilized || pet.sterilized === true;
       const matchesVaccinated = !filterVaccinated || pet.vaccinated === true;

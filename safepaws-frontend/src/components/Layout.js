@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAdoption } from '../contexts/AdoptionContext';
 import { useMap } from '../contexts/MapContext';
-import { fetchCatActivityLogs, createActivityLog, updatePinCondition, getUserProfile, createCatWithPin } from '../services/api';
+import { fetchCatActivityLogs, createActivityLog, updatePinCondition, getUserProfile, createCatWithPin, getSentAdoptionRequests } from '../services/api';
 import Sidebar from './Sidebar';
 import AdoptionForm from './AdoptionForm';
 import AdoptionRequestReview from './AdoptionRequestReview';
@@ -35,6 +35,7 @@ function Layout({ children }) {
   
   // Adoption form state
   const [showAdoptionForm, setShowAdoptionForm] = useState(false);
+  const [sentAdoptionRequests, setSentAdoptionRequests] = useState([]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -48,7 +49,7 @@ function Layout({ children }) {
   // Show on: adoption page (only if not showing adoption listing form), map page, or on notifications page when reviewing an adoption request
   const shouldShowRightSection = (isAdoptionPage && !showAdoptionListingForm) || isMapPage || (isNotificationsPage && reviewRequestId !== null);
   
-  // Clear reviewRequestId when navigating away from notifications page
+  // Clear reviewRequestId when navigating away from notifications page (no need for it anymore)
   useEffect(() => {
     if (reviewRequestId && !isNotificationsPage) {
       setReviewRequestId(null);
@@ -78,6 +79,22 @@ function Layout({ children }) {
     };
     loadUserProfile();
   }, []);
+
+  // Fetch sent adoption requests when on adoption page
+  useEffect(() => {
+    if (isAdoptionPage && currentUserId) {
+      const loadSentRequests = async () => {
+        try {
+          const requests = await getSentAdoptionRequests();
+          setSentAdoptionRequests(requests || []);
+        } catch (error) {
+          console.error('Error loading sent adoption requests:', error);
+          setSentAdoptionRequests([]);
+        }
+      };
+      loadSentRequests();
+    }
+  }, [isAdoptionPage, currentUserId]);
 
   // Fetch activity logs when a pin is selected
   useEffect(() => {
@@ -306,8 +323,15 @@ function Layout({ children }) {
                   listing={selectedListing}
                   currentUserId={currentUserId}
                   onBack={() => setShowAdoptionForm(false)}
-                  onSuccess={(catName) => {
+                  onSuccess={async (catName) => {
                     setShowAdoptionForm(false);
+                    // Refresh sent requests to update button state
+                    try {
+                      const requests = await getSentAdoptionRequests();
+                      setSentAdoptionRequests(requests || []);
+                    } catch (error) {
+                      console.error('Error refreshing sent adoption requests:', error);
+                    }
                     // Notification will be created by backend
                   }}
                 />
@@ -388,24 +412,70 @@ function Layout({ children }) {
                       )}
                     </div>
 
-                    {/* Apply for Adoption Button - only show if listing doesn't belong to current user */}
-                    {currentUserId && selectedListing.uploader_id !== currentUserId && (
-                      <div className="mt-6">
-                        <button
-                          onClick={() => setShowAdoptionForm(true)}
-                          className="w-full px-4 py-2 text-white rounded-lg transition-colors"
-                          style={{ backgroundColor: '#D05A57' }}
-                          onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = '#b94643';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = '#D05A57';
-                          }}
-                        >
-                          Apply for Adoption
-                        </button>
-                      </div>
-                    )}
+                    {/* Apply for Adoption or Edit Listing Button */}
+                    {currentUserId && (() => {
+                      // Check if user is the uploader
+                      const isUploader = selectedListing.uploader_id === currentUserId;
+                      
+                      // Check if user has a pending request for this listing
+                      const hasPendingRequest = sentAdoptionRequests.some(
+                        req => req.listing_id === selectedListing.listing_id && req.status === 'Pending'
+                      );
+                      
+                      // If user is uploader, show Edit Listing button
+                      if (isUploader) {
+                        return (
+                          <div className="mt-6">
+                            <button
+                              onClick={() => setShowAdoptionListingForm(true)}
+                              className="w-full px-4 py-2 text-white rounded-lg transition-colors"
+                              style={{ backgroundColor: '#D05A57' }}
+                              onMouseEnter={(e) => {
+                                e.target.style.backgroundColor = '#b94643';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.target.style.backgroundColor = '#D05A57';
+                              }}
+                            >
+                              Edit Listing
+                            </button>
+                          </div>
+                        );
+                      }
+                      
+                      // If user has pending request, disable button
+                      if (hasPendingRequest) {
+                        return (
+                          <div className="mt-6">
+                            <button
+                              disabled
+                              className="w-full px-4 py-2 text-gray-500 bg-gray-200 rounded-lg cursor-not-allowed"
+                            >
+                              You have a pending request for this cat
+                            </button>
+                          </div>
+                        );
+                      }
+                      
+                      // Otherwise, show Apply button
+                      return (
+                        <div className="mt-6">
+                          <button
+                            onClick={() => setShowAdoptionForm(true)}
+                            className="w-full px-4 py-2 text-white rounded-lg transition-colors"
+                            style={{ backgroundColor: '#D05A57' }}
+                            onMouseEnter={(e) => {
+                              e.target.style.backgroundColor = '#b94643';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.backgroundColor = '#D05A57';
+                            }}
+                          >
+                            Apply for Adoption
+                          </button>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               )}
@@ -890,13 +960,17 @@ function Layout({ children }) {
 
       {/* Adoption Listing Form Modal */}
       {showAdoptionListingForm && isAdoptionPage && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowAdoptionListingForm(false)}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => {
+          setShowAdoptionListingForm(false);
+          // Don't clear selectedListing here - it might be needed for viewing the listing details
+        }}>
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <AdoptionListingForm
+              listing={selectedListing && selectedListing.uploader_id === currentUserId ? selectedListing : null}
               onBack={() => setShowAdoptionListingForm(false)}
               onSuccess={() => {
                 setShowAdoptionListingForm(false);
-                // Refresh the page to show the new listing
+                // Refresh the page to show updated listing
                 window.location.reload();
               }}
             />

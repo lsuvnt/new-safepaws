@@ -190,6 +190,39 @@ export async function getUserProfile() {
 }
 
 /**
+ * Update user profile
+ * @param {Object} profileData - Profile data to update { full_name?, email?, phone?, password? }
+ * @returns {Promise<Object>} Updated user profile data
+ */
+export async function updateUserProfile(profileData) {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/users/profile/update`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(profileData),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Failed to update profile: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    throw error;
+  }
+}
+
+/**
  * Fetch all adoption listings (includes cat data)
  * @returns {Promise<Array>} Array of adoption listing objects with cat information
  */
@@ -353,6 +386,74 @@ export async function createCat(catData) {
     return await response.json();
   } catch (error) {
     console.error('Error creating cat:', error);
+    throw error;
+  }
+}
+
+/**
+ * Update a cat
+ * @param {number} catId - Cat ID
+ * @param {Object} catData - Cat data to update { name, gender, age, notes, image_url }
+ * @returns {Promise<Object>} Updated cat object
+ */
+export async function updateCat(catId, catData) {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/cat/${catId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(catData),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Failed to update cat: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating cat:', error);
+    throw error;
+  }
+}
+
+/**
+ * Update an adoption listing
+ * @param {number} listingId - Listing ID
+ * @param {Object} listingData - Adoption listing data to update { vaccinated, sterilized, notes, is_active }
+ * @returns {Promise<Object>} Updated adoption listing object
+ */
+export async function updateAdoptionListing(listingId, listingData) {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/adoptions/${listingId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(listingData),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Failed to update adoption listing: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating adoption listing:', error);
     throw error;
   }
 }
@@ -524,6 +625,37 @@ export async function getAllIncomingAdoptionRequests() {
     return await response.json();
   } catch (error) {
     console.error('Error fetching all incoming requests:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get sent adoption requests (requests made by current user)
+ * @returns {Promise<Array>} Array of adoption request objects
+ */
+export async function getSentAdoptionRequests() {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/adoption-requests/sent`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Failed to fetch sent requests: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching sent requests:', error);
     throw error;
   }
 }
