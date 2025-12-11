@@ -44,10 +44,11 @@ function Layout({ children }) {
   const isAdoptionPage = location.pathname === '/adoption';
   const isMapPage = location.pathname === '/map';
   const isNotificationsPage = location.pathname === '/notifications';
+  const isHomePage = location.pathname === '/';
   
   // Determine if right section should be shown
-  // Show on: adoption page (only if not showing adoption listing form), map page, or on notifications page when reviewing an adoption request
-  const shouldShowRightSection = (isAdoptionPage && !showAdoptionListingForm) || isMapPage || (isNotificationsPage && reviewRequestId !== null);
+  // Show on: homepage, adoption page (only if not showing adoption listing form), map page, or on notifications page when reviewing an adoption request
+  const shouldShowRightSection = isHomePage || (isAdoptionPage && !showAdoptionListingForm) || isMapPage || (isNotificationsPage && reviewRequestId !== null);
   
   // Clear reviewRequestId when navigating away from notifications page (no need for it anymore)
   useEffect(() => {
@@ -305,8 +306,8 @@ function Layout({ children }) {
     <div className="h-screen w-screen">
       <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
       
-      {/* Right side container - shown on adoption/map pages, or when reviewing adoption request */}
-      {shouldShowRightSection && (
+      {/* Right side container - shown on adoption/map pages, or when reviewing adoption request (NOT homepage - it has its own) */}
+      {shouldShowRightSection && !isHomePage && (
         <div className="fixed right-0 top-0 h-screen w-1/4 bg-gray-200 border-l border-gray-300 overflow-y-auto">
           {reviewRequestId && isNotificationsPage ? (
             <AdoptionRequestReview
@@ -498,7 +499,7 @@ function Layout({ children }) {
                           value={newCatName}
                           onChange={(e) => setNewCatName(e.target.value)}
                           placeholder="Enter cat name"
-                          className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
                           required
                         />
                       </div>
@@ -513,7 +514,7 @@ function Layout({ children }) {
                           value={newCatImageUrl}
                           onChange={(e) => setNewCatImageUrl(e.target.value)}
                           placeholder="Enter image URL"
-                          className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
                         />
                         {/* Image Preview */}
                         {newCatImageUrl && (
@@ -553,7 +554,7 @@ function Layout({ children }) {
                             value={newCatAge}
                             onChange={(e) => setNewCatAge(e.target.value)}
                             placeholder="Optional"
-                            className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
                           />
                         </div>
                         <div>
@@ -563,7 +564,7 @@ function Layout({ children }) {
                           <select
                             value={newCatGender}
                             onChange={(e) => setNewCatGender(e.target.value)}
-                            className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
                           >
                             <option value="UNKNOWN">Unknown</option>
                             <option value="M">Male</option>
@@ -581,7 +582,7 @@ function Layout({ children }) {
                           value={newCatNotes}
                           onChange={(e) => setNewCatNotes(e.target.value)}
                           placeholder="Optional notes about the cat"
-                          className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
                           rows="3"
                         />
                       </div>
@@ -594,7 +595,7 @@ function Layout({ children }) {
                         <select
                           value={newCatCondition}
                           onChange={(e) => setNewCatCondition(e.target.value)}
-                          className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
                         >
                           <option value="NORMAL">Normal</option>
                           <option value="URGENT">Urgent</option>
@@ -613,7 +614,7 @@ function Layout({ children }) {
                             value={newCatConditionDesc}
                             onChange={(e) => setNewCatConditionDesc(e.target.value)}
                             placeholder="Describe why this is urgent..."
-                            className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
                             rows="3"
                             required
                           />
@@ -629,7 +630,7 @@ function Layout({ children }) {
                             value={newCatConditionDesc}
                             onChange={(e) => setNewCatConditionDesc(e.target.value)}
                             placeholder="Describe the treatment..."
-                            className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
                             rows="3"
                             required
                           />
@@ -769,7 +770,7 @@ function Layout({ children }) {
                             value={conditionDescription}
                             onChange={(e) => setConditionDescription(e.target.value)}
                             placeholder="Describe why this is urgent..."
-                            className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
                             rows="3"
                           />
                         </div>
@@ -785,7 +786,7 @@ function Layout({ children }) {
                             value={conditionDescription}
                             onChange={(e) => setConditionDescription(e.target.value)}
                             placeholder="Describe the treatment..."
-                            className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
                             rows="3"
                           />
                         </div>
@@ -840,7 +841,7 @@ function Layout({ children }) {
                               value={activityDescription}
                               onChange={(e) => setActivityDescription(e.target.value)}
                               placeholder="Describe the activity or contribution..."
-                              className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
                               rows="3"
                             />
                             <div className="flex gap-2">
@@ -891,7 +892,7 @@ function Layout({ children }) {
                             {/* First entry: Cat creation */}
                             {selectedPin.created_at && (
                               <div className="relative pl-8">
-                                <div className="absolute left-0 top-1.5 w-6 h-6 bg-blue-500 rounded-full border-2 border-white"></div>
+                                <div className="absolute left-0 top-1.5 w-6 h-6 rounded-full border-2 border-white" style={{ backgroundColor: '#D05A57' }}></div>
                                 <div className="text-sm">
                                   <span className="text-gray-600">
                                     {new Date(selectedPin.created_at).toLocaleString()}: 

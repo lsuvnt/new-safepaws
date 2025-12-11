@@ -132,7 +132,7 @@ function AdoptionForm({ listing, currentUserId, onBack, onSuccess }) {
                 name="full_name"
                 value={formData.full_name}
                 onChange={handleChange}
-                className={`block w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`block w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57] ${
                   errors.full_name ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Enter your full name"
@@ -152,7 +152,7 @@ function AdoptionForm({ listing, currentUserId, onBack, onSuccess }) {
                 name="city"
                 value={formData.city}
                 onChange={handleChange}
-                className={`block w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`block w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57] ${
                   errors.city ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Enter your city"
@@ -173,7 +173,7 @@ function AdoptionForm({ listing, currentUserId, onBack, onSuccess }) {
                 value={formData.age}
                 onChange={handleChange}
                 min="1"
-                className={`block w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`block w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57] ${
                   errors.age ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Enter your age"
@@ -193,7 +193,7 @@ function AdoptionForm({ listing, currentUserId, onBack, onSuccess }) {
                 value={formData.reason_for_adoption}
                 onChange={handleChange}
                 rows="4"
-                className={`block w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`block w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57] ${
                   errors.reason_for_adoption ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Why do you want to adopt this cat?"
@@ -213,7 +213,7 @@ function AdoptionForm({ listing, currentUserId, onBack, onSuccess }) {
                 value={formData.living_situation}
                 onChange={handleChange}
                 rows="4"
-                className={`block w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`block w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57] ${
                   errors.living_situation ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Describe your living situation (house, apartment, etc.)"
@@ -232,7 +232,7 @@ function AdoptionForm({ listing, currentUserId, onBack, onSuccess }) {
                 name="experience_level"
                 value={formData.experience_level}
                 onChange={handleChange}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
               >
                 <option value="None">None</option>
                 <option value="Minimal">Minimal</option>
@@ -249,7 +249,7 @@ function AdoptionForm({ listing, currentUserId, onBack, onSuccess }) {
                 name="has_other_pets"
                 checked={formData.has_other_pets}
                 onChange={handleChange}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-[#D05A57] focus:ring-[#D05A57] border-gray-300 rounded"
               />
               <label htmlFor="has_other_pets" className="ml-2 block text-sm font-medium text-gray-700">
                 Do you have other pets?

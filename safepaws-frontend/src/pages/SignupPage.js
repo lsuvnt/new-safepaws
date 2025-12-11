@@ -41,6 +41,16 @@ function SignupPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <div className="flex justify-center mb-4">
+          <img 
+            src="/safepaws-logos/IMG_1510.PNG" 
+            alt="SafePaws Logo" 
+            className="h-16 w-auto"
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+        </div>
         <h1 className="text-2xl font-bold text-center mb-6">Sign up for SafePaws</h1>
         
         {error && (
@@ -63,7 +73,7 @@ function SignupPage() {
               minLength={3}
               maxLength={20}
               pattern="[A-Za-z0-9_]+"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
               placeholder="Choose a username (letters, numbers, _ only)"
             />
           </div>
@@ -79,7 +89,7 @@ function SignupPage() {
               required
               minLength={2}
               maxLength={50}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
               placeholder="Enter your full name"
             />
           </div>
@@ -93,7 +103,7 @@ function SignupPage() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
               placeholder="Enter your email"
             />
           </div>
@@ -108,7 +118,7 @@ function SignupPage() {
               onChange={handleChange}
               required
               pattern="^05[0-9]{8}$"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
               placeholder="05XXXXXXXX (Saudi number)"
             />
             <p className="text-xs text-gray-500 mt-1">Must start with 05 and be 10 digits</p>
@@ -125,7 +135,7 @@ function SignupPage() {
               required
               minLength={8}
               maxLength={20}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
               placeholder="Create a password (8-20 chars, letters & numbers)"
             />
             <p className="text-xs text-gray-500 mt-1">Must be 8-20 characters with at least one letter and one number</p>
@@ -133,13 +143,24 @@ function SignupPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
+            className="w-full text-white py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ backgroundColor: loading ? '#b94643' : '#D05A57' }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.target.style.backgroundColor = '#b94643';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!loading) {
+                e.target.style.backgroundColor = '#D05A57';
+              }
+            }}
           >
             {loading ? 'Signing up...' : 'Sign Up'}
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-gray-600">
-          Already have an account? <Link to="/login" className="text-blue-600 hover:underline">Login</Link>
+          Already have an account? <Link to="/login" className="text-[#D05A57] hover:underline">Login</Link>
         </p>
       </div>
     </div>

@@ -786,6 +786,71 @@ export async function getUnreadNotificationCount() {
 }
 
 /**
+ * Get user's activity logs
+ * @returns {Promise<Array>} Array of activity log objects
+ */
+export async function getUserActivityLogs() {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/activity/my`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Failed to fetch activity logs: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching user activity logs:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get user's cats (for map)
+ * @returns {Promise<Array>} Array of pin objects with cat data that belong to the user
+ */
+export async function getUserMapCats() {
+  try {
+    const pins = await fetchPins();
+    const userProfile = await getUserProfile();
+    
+    // Filter pins where adding_user_id matches current user
+    return pins.filter(pin => pin.adding_user_id === userProfile.user_id);
+  } catch (error) {
+    console.error('Error fetching user map cats:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get user's adoption listings
+ * @returns {Promise<Array>} Array of adoption listing objects that belong to the user
+ */
+export async function getUserAdoptionListings() {
+  try {
+    const listings = await fetchAdoptionListings();
+    const userProfile = await getUserProfile();
+    
+    // Filter listings where uploader_id matches current user
+    return listings.filter(listing => listing.uploader_id === userProfile.user_id);
+  } catch (error) {
+    console.error('Error fetching user adoption listings:', error);
+    throw error;
+  }
+}
+
+/**
  * Mark a notification as read
  * @param {number} notificationId - Notification ID
  * @returns {Promise<void>}

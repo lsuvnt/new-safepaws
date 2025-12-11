@@ -166,7 +166,7 @@ function AdoptionRequestReview({ requestId, onBack, onSuccess }) {
                   value="Accepted"
                   checked={decision === 'Accepted'}
                   onChange={(e) => setDecision(e.target.value)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                  className="h-4 w-4 text-[#D05A57] focus:ring-[#D05A57] border-gray-300"
                 />
                 <span className="text-gray-900 font-medium">Accept</span>
               </label>
@@ -178,15 +178,15 @@ function AdoptionRequestReview({ requestId, onBack, onSuccess }) {
                   value="Rejected"
                   checked={decision === 'Rejected'}
                   onChange={(e) => setDecision(e.target.value)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                  className="h-4 w-4 text-[#D05A57] focus:ring-[#D05A57] border-gray-300"
                 />
                 <span className="text-gray-900 font-medium">Reject</span>
               </label>
             </div>
 
             {decision === 'Accepted' && (
-              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-800">
+              <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: 'rgba(208, 90, 87, 0.1)', border: '1px solid rgba(208, 90, 87, 0.3)' }}>
+                <p className="text-sm" style={{ color: '#D05A57' }}>
                   Accepting the request will share your phone number and email to {request.full_name} for further arrangements.
                 </p>
               </div>

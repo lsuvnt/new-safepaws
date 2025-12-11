@@ -205,7 +205,7 @@ function SettingsPage() {
               onChange={handleChange}
               minLength={2}
               maxLength={50}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
               placeholder={profile?.full_name || "Enter your full name"}
             />
             <p className="mt-1 text-xs text-gray-500">Leave empty to keep current value</p>
@@ -220,7 +220,7 @@ function SettingsPage() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
               placeholder={profile?.email || "Enter your email"}
             />
             <p className="mt-1 text-xs text-gray-500">Leave empty to keep current value</p>
@@ -237,7 +237,7 @@ function SettingsPage() {
               onChange={handleChange}
               pattern="05\d{8}"
               maxLength={10}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
               placeholder={profile?.phone || "05XXXXXXXX"}
             />
             <p className="mt-1 text-xs text-gray-500">Saudi format: 05XXXXXXXX (10 digits). Leave empty to keep current value</p>
@@ -254,7 +254,7 @@ function SettingsPage() {
               onChange={handleChange}
               minLength={8}
               maxLength={20}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
               placeholder="Enter new password (optional)"
             />
             <p className="mt-1 text-xs text-gray-500">8-20 characters, must include letters and numbers. Leave empty to keep current password</p>
@@ -263,7 +263,18 @@ function SettingsPage() {
           <button
             type="submit"
             disabled={updating}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
+            className="w-full text-white py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ backgroundColor: updating ? '#b94643' : '#D05A57' }}
+            onMouseEnter={(e) => {
+              if (!updating) {
+                e.target.style.backgroundColor = '#b94643';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!updating) {
+                e.target.style.backgroundColor = '#D05A57';
+              }
+            }}
           >
             {updating ? 'Updating Profile...' : 'Update Profile'}
           </button>

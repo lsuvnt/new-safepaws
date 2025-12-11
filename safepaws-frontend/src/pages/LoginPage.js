@@ -38,6 +38,16 @@ function LoginPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <div className="flex justify-center mb-4">
+          <img 
+            src="/safepaws-logos/IMG_1510.PNG" 
+            alt="SafePaws Logo" 
+            className="h-16 w-auto"
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+        </div>
         <h1 className="text-2xl font-bold text-center mb-6">Login to SafePaws</h1>
         
         {error && (
@@ -57,7 +67,7 @@ function LoginPage() {
               value={formData.username}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
               placeholder="Enter your username"
             />
           </div>
@@ -71,20 +81,31 @@ function LoginPage() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
               placeholder="Enter your password"
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
+            className="w-full text-white py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ backgroundColor: loading ? '#b94643' : '#D05A57' }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.target.style.backgroundColor = '#b94643';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!loading) {
+                e.target.style.backgroundColor = '#D05A57';
+              }
+            }}
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-gray-600">
-          Don't have an account? <Link to="/signup" className="text-blue-600 hover:underline">Sign up</Link>
+          Don't have an account? <Link to="/signup" className="text-[#D05A57] hover:underline">Sign up</Link>
         </p>
       </div>
     </div>

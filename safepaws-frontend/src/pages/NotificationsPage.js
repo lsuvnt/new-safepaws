@@ -178,7 +178,7 @@ function NotificationsPage() {
                 type="checkbox"
                 checked={hideRead}
                 onChange={(e) => setHideRead(e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-[#D05A57] focus:ring-[#D05A57] border-gray-300 rounded"
               />
               <span className="text-sm font-medium text-gray-700">Hide read notifications</span>
             </label>
@@ -192,14 +192,14 @@ function NotificationsPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <h2 className="text-xl font-bold text-gray-900">View Adoption Requests</h2>
-              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+              <span className="px-3 py-1 rounded-full text-sm font-semibold" style={{ backgroundColor: 'rgba(208, 90, 87, 0.1)', color: '#D05A57' }}>
                 {totalCount}
               </span>
             </div>
             <select
               value={requestFilter}
               onChange={(e) => setRequestFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
             >
               <option value="All">All ({totalCount})</option>
               <option value="Pending">Pending ({pendingCount})</option>
@@ -311,7 +311,7 @@ function NotificationsPage() {
                           </svg>
                           <a 
                             href={`mailto:${request.receiver_email}`}
-                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                            className="text-[#D05A57] hover:text-[#b94643] hover:underline"
                           >
                             {request.receiver_email}
                           </a>
@@ -324,7 +324,7 @@ function NotificationsPage() {
                           </svg>
                           <a 
                             href={`tel:${request.receiver_phone}`}
-                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                            className="text-[#D05A57] hover:text-[#b94643] hover:underline"
                           >
                             {request.receiver_phone}
                           </a>
@@ -368,7 +368,7 @@ function NotificationsPage() {
                 className={`bg-white rounded-lg shadow-md p-6 border-l-4 ${
                   notification.is_read 
                     ? 'border-gray-300 opacity-75' 
-                    : 'border-blue-500'
+                    : 'border-[#D05A57]'
                 }`}
               >
                 <div className="flex items-start justify-between">
@@ -384,7 +384,7 @@ function NotificationsPage() {
                     {!notification.is_read && (
                       <button
                         onClick={() => handleMarkAsRead(notification.notification_id)}
-                        className="text-sm text-blue-600 hover:text-blue-800 transition-colors whitespace-nowrap"
+                        className="text-sm text-[#D05A57] hover:text-[#b94643] transition-colors whitespace-nowrap"
                       >
                         Mark as read
                       </button>

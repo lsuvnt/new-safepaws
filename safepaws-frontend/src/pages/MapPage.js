@@ -64,6 +64,8 @@ function MapPage() {
     loadPins();
     // Refresh pins every 30 seconds
     const interval = setInterval(loadPins, 30000);
+    
+    return () => clearInterval(interval);
     return () => clearInterval(interval);
   }, [refreshTrigger]); // Also refresh when refreshTrigger changes
 
@@ -287,7 +289,7 @@ function MapPage() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search by cat name..."
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
         />
       </div>
 

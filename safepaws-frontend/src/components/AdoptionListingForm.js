@@ -164,7 +164,7 @@ function AdoptionListingForm({ listing, onBack, onSuccess }) {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`block w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`block w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57] ${
                   errors.name ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Enter the cat's name"
@@ -183,7 +183,7 @@ function AdoptionListingForm({ listing, onBack, onSuccess }) {
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
               >
                 <option value="UNKNOWN">Unknown</option>
                 <option value="M">Male</option>
@@ -202,7 +202,7 @@ function AdoptionListingForm({ listing, onBack, onSuccess }) {
                 value={formData.age}
                 onChange={handleChange}
                 min="0"
-                className={`block w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`block w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57] ${
                   errors.age ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Enter age in years (optional)"
@@ -222,7 +222,7 @@ function AdoptionListingForm({ listing, onBack, onSuccess }) {
                 value={formData.cat_notes}
                 onChange={handleChange}
                 rows="3"
-                className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
                 placeholder="Additional information about the cat (optional)"
               />
             </div>
@@ -237,7 +237,7 @@ function AdoptionListingForm({ listing, onBack, onSuccess }) {
                 name="image_url"
                 value={formData.image_url}
                 onChange={handleChange}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
                 placeholder="Enter image URL (optional)"
               />
               {/* Image Preview */}
@@ -277,7 +277,7 @@ function AdoptionListingForm({ listing, onBack, onSuccess }) {
                 name="vaccinated"
                 checked={formData.vaccinated}
                 onChange={handleChange}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-[#D05A57] focus:ring-[#D05A57] border-gray-300 rounded"
               />
               <label htmlFor="vaccinated" className="ml-2 block text-sm font-medium text-gray-700">
                 Vaccinated
@@ -292,7 +292,7 @@ function AdoptionListingForm({ listing, onBack, onSuccess }) {
                 name="sterilized"
                 checked={formData.sterilized}
                 onChange={handleChange}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-[#D05A57] focus:ring-[#D05A57] border-gray-300 rounded"
               />
               <label htmlFor="sterilized" className="ml-2 block text-sm font-medium text-gray-700">
                 Sterilized
@@ -309,7 +309,7 @@ function AdoptionListingForm({ listing, onBack, onSuccess }) {
                 value={formData.listing_notes}
                 onChange={handleChange}
                 rows="3"
-                className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
                 placeholder="Additional information about the adoption listing (optional)"
               />
             </div>

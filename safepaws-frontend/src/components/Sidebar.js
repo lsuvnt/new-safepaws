@@ -96,7 +96,18 @@ function Sidebar({ isOpen, onToggle }) {
           <div className={`p-6 ${isOpen ? '' : 'px-0 py-6'}`}>
             {isOpen ? (
               <>
-                <h2 className="text-2xl font-bold mb-6">SafePaws</h2>
+                <div className="flex items-center gap-3 mb-6">
+                  <img 
+                    src="/safepaws-logos/IMG_1511.PNG" 
+                    alt="SafePaws Logo" 
+                    className="h-8 w-auto"
+                    onError={(e) => {
+                      // Hide logo if it doesn't exist
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                  <h2 className="text-2xl font-bold">SafePaws</h2>
+                </div>
                 <nav className="space-y-2">
                   <Link 
                     to="/" 
@@ -247,6 +258,17 @@ function Sidebar({ isOpen, onToggle }) {
               </>
             ) : (
               <nav className="space-y-4 flex flex-col items-center">
+                <div className="mb-4">
+                  <img 
+                    src="/safepaws-logos/IMG_1511.PNG" 
+                    alt="SafePaws" 
+                    className="h-10 w-10 object-contain"
+                    onError={(e) => {
+                      // Hide if icon doesn't exist
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
                 <Link 
                   to="/" 
                   className={`block p-3 rounded transition-colors ${

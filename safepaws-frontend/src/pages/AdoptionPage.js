@@ -108,7 +108,7 @@ function AdoptionPage() {
               placeholder="Search by name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
             />
           </div>
         </div>
@@ -123,7 +123,7 @@ function AdoptionPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D05A57] focus:border-[#D05A57]"
             >
               <option value="name">Name (A-Z)</option>
               <option value="age">Age</option>
@@ -137,7 +137,7 @@ function AdoptionPage() {
               id="filterSterilized"
               checked={filterSterilized}
               onChange={(e) => setFilterSterilized(e.target.checked)}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              className="h-4 w-4 text-[#D05A57] focus:ring-[#D05A57] border-gray-300 rounded"
             />
             <label htmlFor="filterSterilized" className="ml-2 block text-sm font-medium text-gray-700">
               Sterilized Only
@@ -151,7 +151,7 @@ function AdoptionPage() {
               id="filterVaccinated"
               checked={filterVaccinated}
               onChange={(e) => setFilterVaccinated(e.target.checked)}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              className="h-4 w-4 text-[#D05A57] focus:ring-[#D05A57] border-gray-300 rounded"
             />
             <label htmlFor="filterVaccinated" className="ml-2 block text-sm font-medium text-gray-700">
               Vaccinated Only
